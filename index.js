@@ -12,7 +12,11 @@ import { fifaData } from './fifa.js';
 (e) Winner of 2014 world cup final */
 fifaData.forEach(function(item){
     if(item.Year === 2014 && item.Stage ==="Final"){
-        console.log(item["Home Team Name"]);
+        console.log(item["Home Team Name"]); //a
+        console.log(item["Away Team Name"]);  //b
+        console.log(item["Home Team Goals"]); //c 
+        console.log(item["Away Team Goals"]); //d
+        console.log(item["Home Team Name"]); //e
     }
 });
 
@@ -32,10 +36,9 @@ getFinals(fifaData);
 function getYears(cb,data){
     const finalsYears = cb(data).map(function(item){
         return item.Year;
-      });
-      return finalsYears;
+    });
+        return finalsYears;
 };
-
 // getYears(getFinals, fifaData);
 
 /* Task 5: Impliment a higher-order function called `getWinners`, that accepts the callback function `getFinals()` and determine the winner (home or away) of each `finals` game. Return the name of all winning countries in an array called `winners` */ 
@@ -52,8 +55,8 @@ function getWinners(cb, data) {
         }
     });
     return winners;
+    
 };
-
 // getWinners(getFinals, (fifaData));
 
 /* Task 6: Implement a higher-order function called `getWinnersByYear` that accepts the following parameters and returns a set of strings "In {year}, {country} won the world cup!" 
@@ -64,42 +67,100 @@ Parameters:
  */
 
 function getAllWinners(winFunc, yearFunc, data) {
-    let mixer = [...winFunc(getFinals, data), ...yearFunc(getFinals, data)];
-    console.log(`${mixer}`);
-    
-};
+    let year = [...yearFunc(getFinals, data)];
+    let team = [...winFunc(getFinals, data)];
 
-getAllWinners(getWinners, getYears, fifaData);
+    //for each item in year array log the year and team @ index
+    year.forEach(function(item, index) {
+        console.log(`In ${year[index]} ${team[index]} won the worldcup!`);
+    });
+};
+//getAllWinners(getWinners, getYears, fifaData);
 
 /* Task 7: Create a function called `getCountryWins` that takes the parameters `data` and `team initials` and returns the number of world cup wins that country has had. 
 
 Hint: Investigate your data to find "team initials"!
 Hint: use `.reduce` */
-/*
-function getCountryWins(data) {
-let winners2 = [];
-let winners =[...getWinners(getFinals, data)];
 
-winners.forEach((element) => {
-    winners2.push(element.slice(1));
-});
+function getCountryWins(data, team) {
+    let winners =[...getWinners(getFinals, data)]; //winners array
+    let winners2 = []; //winners array abbreviated
+    let sumArr = []; //array of total wins for your team
 
-         
+    winners.forEach((element) => {
+        //Germany? Change to FRG and push!
+        if (element === "Germany FR"){
+            winners2.push("FRG");
+        }
+        //Spain? Change to ESP and push!
+        else if (element === "Spain"){
+            winners2.push("ESP")
+        }
+        else{
+        //everything else? slice, caps, push!
+        winners2.push(element.slice(0,3).toUpperCase());
+        }
+    });
+
+    winners2.forEach((win) => {
+        //your team won? Great! push to Sum Array
+        if (win === team){
+            sumArr.push(win);
+        }
+        else{}
+    });
     
-    console.log(`${winners2}`);
-}
 
-getCountryWins(fifaData);
-*/
+        console.log(`${team} has won the world cup ${sumArr.length} times.`);
+}
+//getCountryWins(fifaData, "BRA");
+
 /* Task 8: Write a function called getGoals() that accepts a parameter `data` and returns the team with the most goals score per appearance (average goals for) in the World Cup finals */
 
-function getGoals(/* code here */) {
+function getGoals(data) {
+   
+  let cupTeams = [{name: `Uruguay`}, {name: `Spain`}, {name: `Italy`}, {name: `Germany FR`}, {name: `Brazil`}, {name: `England`}, {name: `Argentina`}, {name: `Spain`}, {name: `Germany`}];
+  let finalsData = getFinals(data);
 
-    /* code here */
+    //for each cupTeam itterate 
+    cupTeams.forEach(function(team, index){
+        //give each cupTeam .cupGoals property and a .cupGames property
+        team.cupGoals = 0;
+        team.cupGames = 0;
+        //itterate through all finals games (we are doing this for every cup team)
+        finalsData.forEach(function(item){
+            // if home team name = team name add home goals to cupTeams.cupGoals & +1 .cupGames
+            if (item["Home Team Name"] === team.name) {
+                team.cupGoals += item["Home Team Goals"];
+                team.cupGames++
+                console.log(`${item["Home Team Goals"]} points for ${team.name}!`)
+            } 
+            // if away team name = team name add away goals to cupTeams.cupGoals & +1 .cupGames
+            else if(item["Away Team Name"] === team.name) {
+                team.cupGoals += item["Away Team Goals"];
+                team.cupGames++
+                console.log(`${item["Away Team Goals"]} points for ${team.name}!`)
+            } else {}
+            });
+    });
+
+    //itterate over all cupTeams and average = goals/games
+    cupTeams.forEach(function(team){
+        team.cupAvg = 0;
+        team.cupAvg = team.cupGoals/team.cupGames
+        console.log(`${team.name} avg = ${team.cupAvg}`)
+    });
+
+    //sort cupTeams by points (Greatest to Least)
+    let sortedGreatest2least = cupTeams.sort(function(a, b){
+        return b.cupAvg - a.cupAvg
+    })
+
+    console.log(`${cupTeams[0].name} has the highest average! Clocking in at a whopping ${cupTeams[0].cupAvg}`);
 
 };
 
-getGoals();
+//getGoals(fifaData);
 
 
 /* Task 9: Write a function called badDefense() that accepts a parameter `data` and calculates the team with the most goals scored against them per appearance (average goals against) in the World Cup finals */
@@ -117,7 +178,7 @@ badDefense();
 
 function getAverageGoals(/* code here */) {
 
-    /* code here */
+    //PLEASE TEACH ME THIS SORCERY
 
 };
 
